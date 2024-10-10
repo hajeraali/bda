@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research Paper Recommender</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        input[type="text"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4273b3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #365e92;
+        }
+        .recommendation, .similar-paper, .suggested-field {
+            background: white;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .recommendation a, .similar-paper a {
+            text-decoration: none;
+            color: #4273b3;
+        }
+        .recommendation a:hover, .similar-paper a:hover {
+            text-decoration: underline;
+        }
+        .similar-button {
+            padding: 5px 10px;
+            margin-left: 10px;
+            background-color: #e0e0e0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .suggested-field {
+            background: #e0f7fa;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Research Paper Recommender</h1>
+    <input type="text" id="field" placeholder="Enter a field of study">
+    <button id="search">Search</button>
+    
+    <h2>Recommendations</h2>
+    <div id="recommendations"></div>
+
+    <h2>Suggested Fields</h2>
+    <div id="suggested-fields"></div>
+
+    <h2>Similar Papers</h2>
+    <div id="similar-papers"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#search').click(function() {
+                let field = $('#field').val();
+                $.post('/recommend', { field: field }, function(data) {
+                    $('#recommendations').empty();
+                    data.forEach(item => {
+                        $('#recommendations').append(
+                            `<div class="recommendation">
+                                <a href="${item.paper.link}" target="_blank">${item.paper.title}</a>
+                                <button class="get-similar" data-index="${item.index}" class="similar-button">Similar Papers</button>
+                            </div>`
+                        );
+                    });
+                });
+
+                // Suggest fields based on user input
+                $.post('/suggest_fields', { field: field }, function(suggestedFields) {
+                    $('#suggested-fields').empty();
+                    suggestedFields.forEach(field => {
+                        $('#suggested-fields').append(
+                            `<div class="suggested-field">${field}</div>`
+                        );
+                    });
+                });
+            });
+
+            $(document).on('click', '.get-similar', function() {
+                let index = $(this).data('index');
+                let field = $('#field').val();
+                $.post('/recommend_similar', { paper_index: index, field: field }, function(data) {
+                    $('#similar-papers').empty();
+                    data.forEach(item => {
+                        $('#similar-papers').append(
+                            `<div class="similar-paper">
+                                <a href="${item.paper.link}" target="_blank">${item.paper.title}</a>
+                            </div>`
+                        );
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
