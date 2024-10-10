@@ -2,37 +2,47 @@ body {
     font-family: Arial, sans-serif;
     margin: 20px;
     padding: 0;
+    background-color: #f8f8f8; /* Light background for better contrast */
 }
 
 h1 {
-    color: #333;
+    color: #5e4b8d; /* Dark purple */
 }
 
 textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 10px;
+    border: 1px solid #d1c6e0; /* Light purple border */
+    border-radius: 4px; /* Rounded corners for a modern look */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 button {
-    background-color: #4273b3;
+    background-color: #7a5baf; /* Main button color (medium purple) */
     color: white;
     border: none;
     padding: 10px 15px;
     cursor: pointer;
+    border-radius: 4px; /* Rounded corners for buttons */
+    transition: background-color 0.3s ease; /* Smooth transition on hover */
 }
 
 button:hover {
-    background-color: #365f9f;
+    background-color: #664a9f; /* Darker purple on hover */
 }
 
 #results div {
-    border: 1px solid #ccc;
+    border: 1px solid #d1c6e0; /* Light purple border for results */
     padding: 10px;
     margin: 10px 0;
+    border-radius: 4px; /* Rounded corners for result boxes */
+    background-color: #fff; /* White background for contrast */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
 h3 {
     margin: 0;
     font-size: 18px;
+    color: #4e3f6f; /* Medium dark purple for headings */
 }

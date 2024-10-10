@@ -5,63 +5,126 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Research Paper Recommender</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1, h2 {
-            color: #333;
-        }
-        input[type="text"] {
-            padding: 10px;
-            margin: 10px 0;
-            width: 80%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        button {
-            padding: 10px 15px;
-            background-color: #4273b3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #365e92;
-        }
-        .recommendation, .similar-paper, .suggested-field {
-            background: white;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .recommendation a, .similar-paper a {
-            text-decoration: none;
-            color: #4273b3;
-        }
-        .recommendation a:hover, .similar-paper a:hover {
-            text-decoration: underline;
-        }
-        .similar-button {
-            padding: 5px 10px;
-            margin-left: 10px;
-            background-color: #e0e0e0;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .suggested-field {
-            background: #e0f7fa;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-        }
-    </style>
+   
+   <style> body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 20px;
+        padding: 0;
+        background-color: #f0f4f8; /* Softer light background */
+    }
+    
+    h1 {
+        color: #5e4b8d; /* Dark purple */
+        font-size: 2.5rem; /* Larger heading */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    h2 {
+        color: #4e3f6f; /* Medium dark purple */
+        font-size: 1.75rem; /* Slightly larger subheading */
+        margin-top: 30px;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    
+    textarea {
+        width: 100%;
+        padding: 15px; /* Increased padding for comfort */
+        margin-bottom: 20px; /* More space below */
+        border: 1px solid #d1c6e0; /* Light purple border */
+        border-radius: 8px; /* More rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        font-size: 1rem; /* Increased font size */
+    }
+    
+    input[type="text"] {
+        padding: 15px; /* Increased padding */
+        margin: 10px 0;
+        width: 80%;
+        border: 1px solid #d1c6e0; /* Light purple border */
+        border-radius: 8px; /* More rounded corners */
+        font-size: 1rem; /* Increased font size */
+        transition: border-color 0.3s ease; /* Smooth transition */
+    }
+    
+    input[type="text"]:focus {
+        border-color: #7a5baf; /* Change border color on focus */
+        outline: none; /* Remove default outline */
+    }
+    
+    button {
+        background-color: #7a5baf; /* Main button color (medium purple) */
+        color: white;
+        border: none;
+        padding: 15px 20px; /* Increased button size */
+        cursor: pointer;
+        border-radius: 8px; /* More rounded corners for buttons */
+        transition: background-color 0.3s ease, transform 0.2s; /* Smooth transition */
+        font-size: 1rem; /* Increased font size */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+    
+    button:hover {
+        background-color: #664a9f; /* Darker purple on hover */
+        transform: translateY(-2px); /* Lift effect on hover */
+    }
+    
+    #results div {
+        border: 1px solid #d1c6e0; /* Light purple border for results */
+        padding: 15px; /* More padding */
+        margin: 10px 0;
+        border-radius: 8px; /* More rounded corners for result boxes */
+        background-color: #ffffff; /* White background for contrast */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+    
+    h3 {
+        margin: 0;
+        font-size: 1.25rem; /* Larger subheadings */
+        color: #4e3f6f; /* Medium dark purple for headings */
+    }
+    
+    .recommendation, .similar-paper, .suggested-field {
+        background: white;
+        margin: 15px 0;
+        padding: 20px; /* More padding */
+        border-radius: 8px; /* More rounded corners */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+    
+    .recommendation a, .similar-paper a {
+        text-decoration: none;
+        color: #4273b3; /* Primary link color */
+        font-weight: bold; /* Bold links */
+    }
+    
+    .recommendation a:hover, .similar-paper a:hover {
+        text-decoration: underline;
+        color: #664a9f; /* Change color on hover */
+    }
+    
+    .similar-button {
+        padding: 5px 10px;
+        margin-left: 10px;
+        background-color: #e0e0e0;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Smooth transition */
+    }
+    
+    .similar-button:hover {
+        background-color: #d1d1d1; /* Darker gray on hover */
+    }
+    
+    .suggested-field {
+        background: #e0f7fa;
+        padding: 15px; /* Increased padding */
+        margin: 5px 0;
+        border-radius: 8px; /* More rounded corners */
+    }
+</style> 
 </head>
 <body>
     <h1>Research Paper Recommender 📚</h1>
