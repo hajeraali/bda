@@ -10,7 +10,7 @@ from flask import Flask, render_template, request, jsonify
 app = Flask(__name__)
 
 # Step 1: Fetch papers from arXiv
-def fetch_arxiv_papers(query, max_results=10):
+def fetch_arxiv_papers(query, max_results=100):
     base_url = "http://export.arxiv.org/api/query?"
     search_query = f"search_query={query}&start=0&max_results={max_results}"
     response = requests.get(base_url + search_query)
@@ -55,68 +55,26 @@ def recommend_papers(papers, tfidf_matrix, paper_index):
     return [papers[i] for i in similar_indices]
 
 # Keywords to fields mapping
+# Keywords to fields mapping (expanded with more fields and broader categories)
 keyword_field_map = {
-    # Artificial Intelligence & Machine Learning
     'artificial intelligence': ['deep learning', 'machine learning', 'natural language processing', 'reinforcement learning'],
     'deep learning': ['artificial intelligence', 'neural networks', 'computer vision', 'natural language processing'],
     'machine learning': ['artificial intelligence', 'data science', 'reinforcement learning', 'natural language processing'],
     'reinforcement learning': ['machine learning', 'deep learning', 'robotics'],
     'natural language processing': ['deep learning', 'artificial intelligence', 'speech recognition', 'computational linguistics'],
-    'neural networks': ['deep learning', 'machine learning', 'artificial intelligence', 'computer vision'],
-
-    # Data Science & Analytics
-    'data science': ['data mining', 'predictive analytics', 'big data', 'statistics', 'business intelligence'],
-    'big data': ['data science', 'data engineering', 'cloud computing', 'distributed systems'],
-    'data mining': ['data science', 'machine learning', 'statistics', 'big data'],
-    'predictive analytics': ['data science', 'machine learning', 'statistics', 'business intelligence'],
-    'statistics': ['data science', 'predictive analytics', 'mathematics', 'data mining'],
-    'business intelligence': ['data science', 'data visualization', 'data engineering', 'predictive analytics'],
-    'data engineering': ['big data', 'cloud computing', 'data science', 'databases'],
-
-    # Computer Vision
-    'image processing': ['computer vision', 'object detection', 'image recognition', 'pattern recognition'],
-    'object detection': ['computer vision', 'image recognition', 'facial recognition', 'pattern recognition'],
-    'image recognition': ['object detection', 'facial recognition', 'augmented reality', 'pattern recognition'],
-    '3D reconstruction': ['augmented reality', 'virtual reality', 'pattern recognition', 'computer vision'],
-    'pattern recognition': ['image recognition', 'object detection', 'facial recognition', 'gesture recognition'],
-    'augmented reality': ['virtual reality', '3D reconstruction', 'computer vision', 'gesture recognition'],
-    'facial recognition': ['image recognition', 'object detection', 'pattern recognition', 'gesture recognition'],
-    'gesture recognition': ['facial recognition', 'augmented reality', 'pattern recognition', 'computer vision'],
-
-    # Cybersecurity
     'cybersecurity': ['network security', 'ethical hacking', 'encryption', 'blockchain security'],
-    'network security': ['cybersecurity', 'firewalls', 'encryption', 'penetration testing'],
-    'ethical hacking': ['cybersecurity', 'penetration testing', 'vulnerability assessment', 'malware analysis'],
-    'encryption': ['cybersecurity', 'network security', 'blockchain security', 'data privacy'],
-    'blockchain security': ['blockchain', 'cybersecurity', 'cryptography', 'encryption'],
-    'vulnerability assessment': ['ethical hacking', 'penetration testing', 'cybersecurity', 'network security'],
-    'penetration testing': ['ethical hacking', 'vulnerability assessment', 'cybersecurity'],
-    'malware analysis': ['cybersecurity', 'vulnerability assessment', 'ethical hacking', 'network security'],
-
-    # Robotics
-    'robotics': ['autonomous systems', 'control systems', 'robot motion planning', 'reinforcement learning'],
-    'autonomous systems': ['robotics', 'control systems', 'artificial intelligence', 'robot motion planning'],
-    'control systems': ['robotics', 'autonomous systems', 'industrial automation'],
-    'robot motion planning': ['robotics', 'autonomous systems', 'control systems'],
-    
-    # Natural Sciences
-    'bioinformatics': ['genomics', 'biotechnology', 'systems biology', 'molecular biology'],
-    'genomics': ['bioinformatics', 'molecular biology', 'genetics', 'biotechnology'],
-    'molecular biology': ['genomics', 'bioinformatics', 'biochemistry', 'genetics'],
-    'environmental science': ['climate change', 'sustainability', 'ecology', 'conservation'],
-    'climate change': ['environmental science', 'sustainability', 'renewable energy', 'global warming'],
-
-    # Social Sciences
-    'psychology': ['cognitive science', 'behavioral science', 'neuroscience', 'social psychology'],
-    'social media': ['communications', 'digital marketing', 'behavioral science', 'media studies'],
-    'economics': ['finance', 'business analytics', 'data science', 'market research'],
-    'finance': ['economics', 'investment', 'financial modeling', 'business analytics'],
-    
-    # Engineering
-    'mechanical engineering': ['robotics', 'control systems', 'manufacturing', 'thermodynamics'],
-    'electrical engineering': ['electronics', 'power systems', 'control systems', 'renewable energy'],
-    'civil engineering': ['structural engineering', 'construction management', 'geotechnical engineering', 'environmental engineering'],
-    'chemical engineering': ['process engineering', 'biotechnology', 'materials science', 'thermodynamics'],
+    'data science': ['data mining', 'predictive analytics', 'big data', 'statistics', 'business intelligence'],
+    'blockchain': ['cryptography', 'distributed systems', 'decentralization', 'smart contracts'],
+    'computer vision': ['image recognition', 'deep learning', 'object detection', 'convolutional neural networks'],
+    'quantum computing': ['quantum cryptography', 'quantum algorithms', 'superposition', 'quantum entanglement'],
+    'robotics': ['robot motion planning', 'robot control', 'autonomous systems', 'sensor fusion'],
+    'cloud computing': ['distributed systems', 'virtualization', 'containerization', 'cloud security'],
+    'big data': ['hadoop', 'spark', 'data lakes', 'data mining'],
+    'bioinformatics': ['genomics', 'proteomics', 'computational biology', 'biostatistics'],
+    'renewable energy': ['solar energy', 'wind energy', 'sustainable energy', 'energy storage'],
+    'iot': ['embedded systems', 'sensor networks', 'edge computing', 'smart devices'],
+    'ethical hacking': ['penetration testing', 'vulnerability assessment', 'social engineering', 'cybersecurity'],
+    # Add more fields as needed
 }
 
 @app.route('/')
@@ -128,8 +86,7 @@ def recommend():
     query = request.form.get('field')
     papers_data = fetch_arxiv_papers(query)
     papers = parse_arxiv_data(papers_data)
-    
-    # Return papers along with their indices
+
     recommendations = [{'index': i, 'paper': paper} for i, paper in enumerate(papers)]
     return jsonify(recommendations)
 
@@ -139,11 +96,10 @@ def recommend_similar():
     query = request.form.get('field')
     papers_data = fetch_arxiv_papers(query)
     papers = parse_arxiv_data(papers_data)
-    
+
     tfidf_matrix = create_tfidf_matrix(papers)
     similar_papers = recommend_papers(papers, tfidf_matrix, paper_index)
-    
-    # Return similar papers with their indices
+
     similar_paper_recommendations = [{'index': i, 'paper': paper} for i, paper in enumerate(similar_papers)]
     return jsonify(similar_paper_recommendations)
 
@@ -151,12 +107,12 @@ def recommend_similar():
 def suggest_fields():
     user_input = request.form.get('field').lower()
     suggested_fields = set()
-    
-    for keyword, fields in keyword_field_map.items():
-        if keyword in user_input:
-            suggested_fields.update(fields)  # Add all related fields
 
-    return jsonify(list(suggested_fields))
+    for keyword, fields in keyword_field_map.items():
+        if keyword in user_input or user_input in keyword:  # Partial match, both ways
+            suggested_fields.update(fields)
+
+    return jsonify(list(suggested_fields) if suggested_fields else ["No suggestions available"])
 
 if __name__ == '__main__':
     app.run(debug=True)
